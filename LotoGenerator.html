@@ -130,17 +130,17 @@
     <div class="grid-panel" id="grid-panel">
       <!-- Grid numbers will be generated here -->
     </div>
-    <div class="recent-numbers" id="recent-numbers">Derniers numéros tirés : -</div>
+    <div class="recent-numbers" id="recent-numbers">Last drawn numbers : -</div>
     <div class="footer">
       <div class="status">
-        <span>Il reste encore </span>
+        <span>There are still </span>
         <span id="remaining-numbers">90</span>
-        <span> chiffre(s) à tirer</span>
+        <span> numbers left to draw</span>
       </div>
       <div>
-        <button onclick="shakeBag()">Secouer le Sac 🎲</button>
-        <button onclick="resetGame()">On recommence</button>
-        <button onclick="generateNumber()">Nouveau Numéro</button>
+        <button onclick="shakeBag()">Shake the Bag 🎲</button>
+        <button onclick="resetGame()">Reset</button>
+        <button onclick="generateNumber()">Draw a New Number</button>
       </div>
     </div>
   </div>
@@ -167,7 +167,7 @@
     // Generate a new random number
 	function generateNumber() {
 	  if (usedNumbers.size >= 90) {
-	    alert("Tous les numéros ont été tirés !");
+	    alert("All numbers have been drawn!");
 	    return;
 	  }
 
@@ -201,7 +201,7 @@
       if (recentNumbers.length > 4) {
         recentNumbers.shift();
       }
-      recentNumbersDiv.textContent = `Derniers numéros tirés : ${recentNumbers.join(', ')}`;
+      recentNumbersDiv.textContent = `Last drawn numbers: ${recentNumbers.join(', ')}`;
     }
 
     // Reset the game
@@ -210,7 +210,7 @@
       usedNumbers.clear();
       recentNumbers.length = 0;
       remainingNumbersSpan.textContent = remainingNumbers;
-      recentNumbersDiv.textContent = "Derniers numéros tirés : -";
+      recentNumbersDiv.textContent = "Last drawn numbers: -";
       initializeGrid();
     }
 
@@ -218,7 +218,7 @@
     function shakeBag() {
       const seed = Date.now().toString(); 
       rng = new Math.seedrandom(seed); 
-      alert("Le sac a été secoué !");
+      alert("The bag has been shaken! 🎲");
     }
 
     // Initialize the grid on page load
