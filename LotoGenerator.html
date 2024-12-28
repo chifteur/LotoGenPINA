@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loto</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/seedrandom/3.0.5/seedrandom.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f0f0f0;
+    }
+    .container {
+      max-width: 90%;
+      margin: 20px auto;
+      padding: 10px;
+      background-color: #e0e0e0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .header {
+      text-align: center;
+      font-size: 4vw; /* Responsive font size */
+      color: lime;
+      font-family: 'Arial Black', sans-serif;
+      margin-bottom: 10px;
+    }
+    .grid-panel {
+      display: grid;
+      grid-template-columns: repeat(10, 1fr);
+      gap: 5px;
+      width: 100%;
+    }
+    .grid-panel div {
+      width: 100%;
+      padding: 5px 0;
+      text-align: center;
+      background-color: #d3d3d3;
+      border: 1px solid #ccc;
+      font-size: 1em;
+    }
+    .grid-panel .highlight {
+      background-color: #90ee90;
+    }
+    .recent-numbers {
+      text-align: center;
+      margin: 10px 0;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    .footer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 10px;
+      background: #ddd;
+      border-radius: 4px;
+    }
+    .footer .status {
+      flex: 1;
+      font-size: 1em;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .footer button {
+      margin: 5px;
+      padding: 10px 15px;
+      font-size: 1em;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    /* Media Queries */
+    @media (max-width: 768px) {
+      .header {
+        font-size: 6vw;
+      }
+      .grid-panel {
+        grid-template-columns: repeat(5, 1fr); /* Smaller grid for smaller screens */
+      }
+      .footer button {
+        font-size: 0.9em;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header {
+        font-size: 8vw;
+      }
+      .grid-panel {
+        grid-template-columns: repeat(3, 1fr); /* Very compact grid for smartphones */
+      }
+      .footer .status {
+        font-size: 0.9em;
+      }
+      .footer button {
+        font-size: 0.8em;
+        padding: 5px;
+      }
+    }
+
+    @media (min-height: 800px) {
+      .grid-panel div {
+        font-size: 1.2em; /* Larger numbers for bigger screens */
+      }
+    }
+    
+    @keyframes highlight-new {
+	0% { background-color: yellow; transform: scale(1.2); }
+	50% { background-color: orange; transform: scale(1.1); }
+	100% { background-color: #90ee90; transform: scale(1); }
+	}
+	.grid-panel .new-number {
+	animation: highlight-new 1.5s ease-out;
+	}
+	
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">Loto</div>
+    <div class="grid-panel" id="grid-panel">
+      <!-- Grid numbers will be generated here -->
+    </div>
+    <div class="recent-numbers" id="recent-numbers">Derniers numéros tirés : -</div>
+    <div class="footer">
+      <div class="status">
+        <span>Il reste encore </span>
+        <span id="remaining-numbers">90</span>
+        <span> chiffre(s) à tirer</span>
+      </div>
+      <div>
+        <button onclick="shakeBag()">Secouer le Sac 🎲</button>
+        <button onclick="resetGame()">On recommence</button>
+        <button onclick="generateNumber()">Nouveau Numéro</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    let remainingNumbers = 90;
+    const gridPanel = document.getElementById('grid-panel');
+    const remainingNumbersSpan = document.getElementById('remaining-numbers');
+    const recentNumbersDiv = document.getElementById('recent-numbers');
+    const usedNumbers = new Set();
+    const recentNumbers = [];
+    let rng = Math.random;
+
+    // Initialize the grid with numbers 1 to 90
+    function initializeGrid() {
+      gridPanel.innerHTML = '';
+      for (let i = 1; i <= 90; i++) {
+        const cell = document.createElement('div');
+        cell.textContent = i;
+        cell.id = `number-${i}`;
+        gridPanel.appendChild(cell);
+      }
+    }
+
+    // Generate a new random number
+	function generateNumber() {
+	  if (usedNumbers.size >= 90) {
+	    alert("Tous les numéros ont été tirés !");
+	    return;
+	  }
+
+	  let number;
+	  do {
+	    number = Math.floor(rng() * 90) + 1;
+	  } while (usedNumbers.has(number));
+
+	  usedNumbers.add(number);
+
+	  const newNumberCell = document.getElementById(`number-${number}`);
+	  newNumberCell.classList.add('highlight', 'new-number');
+
+	  setTimeout(() => {
+	    newNumberCell.classList.remove('new-number');
+	  }, 1500); // Supprime la classe après l'animation
+
+	  updateRemainingNumbers();
+	  updateRecentNumbers(number);
+	}
+
+    // Update the remaining numbers count
+    function updateRemainingNumbers() {
+      remainingNumbers = 90 - usedNumbers.size;
+      remainingNumbersSpan.textContent = remainingNumbers;
+    }
+
+    // Update the recent numbers display
+    function updateRecentNumbers(number) {
+      recentNumbers.push(number);
+      if (recentNumbers.length > 4) {
+        recentNumbers.shift();
+      }
+      recentNumbersDiv.textContent = `Derniers numéros tirés : ${recentNumbers.join(', ')}`;
+    }
+
+    // Reset the game
+    function resetGame() {
+      remainingNumbers = 90;
+      usedNumbers.clear();
+      recentNumbers.length = 0;
+      remainingNumbersSpan.textContent = remainingNumbers;
+      recentNumbersDiv.textContent = "Derniers numéros tirés : -";
+      initializeGrid();
+    }
+
+    // Simulate shaking the bag and reinitialize RNG
+    function shakeBag() {
+      const seed = Date.now().toString(); 
+      rng = new Math.seedrandom(seed); 
+      alert("Le sac a été secoué !");
+    }
+
+    // Initialize the grid on page load
+    initializeGrid();
+  </script>
+</body>
+</html>
+
